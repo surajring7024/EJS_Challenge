@@ -86,3 +86,12 @@ function truncateString(str, maxLength) {
 app.listen(3000, function() {
   console.log("Server started on port 3000");
 });
+
+
+(function (buttonText) {
+     button.addEventListener('click', function () {
+     const headingName = "My Heading Name";
+     const url = "test.aspx?buttonText=" + encodeURIComponent(buttonText) + "&headingName=" + encodeURIComponent(headingName);
+     window.location.href = url;
+  });
+})(result[UnitID].buttons[btnID]);
