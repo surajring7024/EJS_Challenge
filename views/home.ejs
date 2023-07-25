@@ -5,8 +5,8 @@
 <br>
 <% for(var i = 0; i < posts.length; i++) { %>
     
-    <h1><%= posts[i].title %></h1>
-    <p><%= posts[i].postBody.substring(0,100)+"..." %> <a href="/posts/<%= posts[i].title %>">read</a></p>
+    <h1><%= posts[i].Title %></h1>
+    <p><%= posts[i].Content.substring(0,100)+"..." %> <a href="/posts/<%= posts[i].Title %>">read</a></p>
 
 <% } %>
 

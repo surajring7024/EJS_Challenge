@@ -2,6 +2,7 @@
 
 const express = require("express");
 const bodyParser = require("body-parser");
+const mongoose = require("mongoose");
 const ejs = require("ejs");
 const _ = require("lodash");
 
@@ -18,17 +19,35 @@ app.use(express.static("public"));
 
 
 //Global Variables
-  const postContent =[];
+  //const postContent =[];
+
+//mongoose middleware
+mongoose.connect("mongodb://localhost:27017/DailyJournal" );
+
+//mongoDB Starting
+
+const postSchema={
+  Title:String,
+  Content:String
+}
+
+const Post=mongoose.model('Post', postSchema);
 
 //challenge one 
 app.get('/', (req, res) => {
-  res.render('home',{
-    home_para:homeStartingContent,
-    posts:postContent
-  });
+  Post.find({})
+  .then((postContent)=>{
+    res.render('home',{
+      home_para:homeStartingContent,
+      posts:postContent
+    });
+  })
+  
 });
 
 app.get('/about', (req, res) => {
+
+  
   res.render('about',{
     about_para:aboutContent
   });
@@ -42,34 +61,42 @@ app.get('/contact', (req, res) => {
 
 app.get('/compose', (req, res) => {
   res.render('compose',{
+    title:''
   });
 });
 
-app.post('/compose', (req, res) => {
+app.post('/compose', async (req, res) => {
   const postTitle = req.body.title;
   const postBody = req.body.post;
 
-  if(postTitle != "" && postBody!=""){
-    postContent.push({
-      title:postTitle,
-      postBody:postBody
-    });
+ 
+ 
+    if(postTitle != "" && postBody!=""){
+      
+    const newPost= new Post({
+      Title:postTitle, 
+      Content:postBody
+    })
+    newPost.save();   
   }
-
   res.redirect("/");
+
 });
 
-app.get('/posts/:topic', (req, res) => {
- for(var i = 0; i < postContent.length; i++){
 
-    if(_.lowerCase(postContent[i].title)===_.lowerCase(req.params.topic)){
-      res.render('post', {
-        title:postContent[i].title, 
-        postBody:postContent[i].postBody
-      });
-      break;
-    }
-  }
+
+app.get('/posts/:topic', (req, res) => {
+  Post.findOne({Title:req.params.topic})
+  .then((postContent)=>{  
+     // if(_.lowerCase(postContent.Title)===_.lowerCase(req.params.topic)){
+        res.render('post', {
+          title:postContent.Title, 
+          postBody:postContent.Content
+        });
+     // }
+    
+  })
+ 
   });
 
 function truncateString(str, maxLength) {
@@ -83,15 +110,9 @@ function truncateString(str, maxLength) {
       return truncatedString + '...';
 }
 
+
+
 app.listen(3000, function() {
   console.log("Server started on port 3000");
 });
 
-
-(function (buttonText) {
-     button.addEventListener('click', function () {
-     const headingName = "My Heading Name";
-     const url = "test.aspx?buttonText=" + encodeURIComponent(buttonText) + "&headingName=" + encodeURIComponent(headingName);
-     window.location.href = url;
-  });
-})(result[UnitID].buttons[btnID]);
